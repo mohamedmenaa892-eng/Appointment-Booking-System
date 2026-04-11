@@ -1,0 +1,92 @@
+{% extends "base/navbar.html" %}
+
+{% block title %}
+{{ service.name }}
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+<!-- SERVICE INFO -->
+
+<div class="card shadow-sm border-0 p-4 mb-5">
+
+<div class="d-flex justify-content-between align-items-center">
+
+<div>
+<h4 class="fw-bold mb-1">
+{{ service.name }}
+</h4>
+
+<small class="text-muted">
+Duration: {{ service.duration }} min
+</small>
+</div>
+
+<div class="text-end">
+<p class="mb-0 text-muted">Price</p>
+<h5 class="text-primary fw-bold">
+$ {{ service.price }}
+</h5>
+</div>
+
+</div>
+
+</div>
+
+<!-- DAYS -->
+
+<h5 class="fw-semibold mb-4">
+Choose a Day
+</h5>
+
+<div class="row g-3">
+
+{% for day in days_list %}
+
+<div class="col-lg-3 col-md-4 col-6">
+
+<a href="{% url 'booking_slots' service.slug day|date:'Y-m-d' %}" class="text-decoration-none">
+
+<div class="day-card p-3 text-center">
+
+<small class="text-muted">
+{{ day|date }}
+</small>
+
+</div>
+
+</a>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+</div>
+
+<style>
+
+.day-card {
+background: white;
+border-radius: 12px;
+border: 1px solid #eaeaea;
+transition: 0.25s;
+}
+
+.day-card:hover {
+background: #0d6efd;
+color: white;
+transform: translateY(-4px);
+box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+.day-card:hover small {
+color: #e0e0e0 !important;
+}
+
+</style>
+
+{% endblock %}

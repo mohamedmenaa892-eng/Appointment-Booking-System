@@ -1,0 +1,139 @@
+{% extends "base/navbar.html" %}
+
+{% block title %}
+Select Time
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+<!-- SERVICE INFO -->
+
+<div class="card shadow-sm border-0 p-4 mb-4">
+
+<div class="d-flex justify-content-between align-items-center">
+
+<div>
+<h4 class="fw-bold mb-1">
+{{ service.name }}
+</h4>
+
+<small class="text-muted">
+Duration: {{ service.duration }} min
+</small>
+</div>
+
+<div class="text-end">
+<p class="mb-0 text-muted">Price</p>
+<h5 class="text-primary fw-bold">
+$ {{ service.price }}
+</h5>
+</div>
+
+</div>
+
+</div>
+
+<!-- DAY -->
+
+<div class="mb-4">
+<h5 class="fw-semibold">
+📅 {{ day }}
+</h5>
+</div>
+
+<!-- SLOTS -->
+
+<h6 class="mb-3 fw-semibold">
+Available Times
+</h6>
+
+<div class="row g-3">
+
+{% for slot in slots %}
+
+<div class="col-lg-3 col-md-4 col-6">
+
+{% if request.user.is_authenticated %}
+
+<a href="{% url 'confirme_booking' slug=service.slug time=slot|time:'H:i' date=day|date:'Y-m-d' %}" class="text-decoration-none">
+
+<div class="slot-btn text-center">
+{{ slot|time:'H:i' }}
+</div>
+
+</a>
+
+{% else %}
+
+<a href="{% url 'user_auth:login' %}?next={% url 'confirme_booking' slug=service.slug time=slot|time:'H:i' date=day|date:'Y-m-d' %}" class="text-decoration-none">
+
+<div class="slot-btn text-center">
+{{ slot|time:'H:i' }}
+</div>
+
+</a>
+
+{% endif %}
+
+</div>
+
+{% endfor %}
+
+</div>
+
+
+<style>
+
+/* نفس ستايل الأزرار */
+
+.slot-btn {
+padding: 12px;
+border-radius: 10px;
+border: 1px solid #ddd;
+background: white;
+transition: 0.25s;
+cursor: pointer;
+}
+
+.slot-btn:hover {
+background: #0d6efd;
+color: white;
+transform: translateY(-3px);
+box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+}
+
+</style>
+
+
+</div>
+
+</div>
+
+<style>
+
+/* SLOT STYLE */
+
+.slot-btn {
+padding: 12px;
+border-radius: 10px;
+border: 1px solid #ddd;
+background: white;
+transition: 0.25s;
+font-weight: 500;
+cursor: pointer;
+}
+
+/* HOVER */
+
+.slot-btn:hover {
+background: #0d6efd;
+color: white;
+transform: translateY(-3px);
+box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+}
+
+</style>
+
+{% endblock %}
