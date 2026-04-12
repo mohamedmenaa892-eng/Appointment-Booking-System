@@ -26,7 +26,7 @@ def login_(request:HttpRequest):
 class CreateAccount(CreateView):
     form_class = CreateAccountForm
     template_name = 'main/create_account.html'
-    success_url = reverse_lazy('login')
+    success_url = reverse_lazy('user_auth:login')
 
 
 def logout_(request:HttpRequest):
