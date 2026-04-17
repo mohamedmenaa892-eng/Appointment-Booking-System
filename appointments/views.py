@@ -44,7 +44,7 @@ def time_slot_view(request:HttpRequest , slug , date ):
 def appointments(request: HttpRequest, slug, time, date):
     
     if not request.user.is_authenticated:
-        messages.error("You need to log in to continue the booking process. Please log in")
+        messages.error(request,"You need to log in to continue the booking process. Please log in")
         return redirect(f"{reverse('user_auth:login')}?next{request.get_full_path()}")
     
     form = FormBooking(request.POST or None)
