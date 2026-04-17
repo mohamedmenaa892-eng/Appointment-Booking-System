@@ -55,8 +55,6 @@ Available Times
 
 <div class="col-lg-3 col-md-4 col-6">
 
-{% if request.user.is_authenticated %}
-
 <a href="{% url 'confirme_booking' slug=service.slug time=slot|time:'H:i' date=day|date:'Y-m-d' %}" class="text-decoration-none">
 
 <div class="slot-btn text-center">
@@ -64,18 +62,6 @@ Available Times
 </div>
 
 </a>
-
-{% else %}
-
-<a href="{% url 'user_auth:login' %}?next={% url 'confirme_booking' slug=service.slug time=slot|time:'H:i' date=day|date:'Y-m-d' %}" class="text-decoration-none">
-
-<div class="slot-btn text-center">
-{{ slot|time:'H:i' }}
-</div>
-
-</a>
-
-{% endif %}
 
 </div>
 

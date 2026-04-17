@@ -5,7 +5,7 @@ from datetime import timedelta , datetime
 from .utlis import generate_time_slots , validate_slots , view_days
 from .forms import FormBooking
 from django.db import IntegrityError
-from django.contrib.auth.decorators import login_required
+from django.urls import reverse
 from django.contrib import messages
 
 
@@ -41,8 +41,11 @@ def time_slot_view(request:HttpRequest , slug , date ):
     return render(request,'appointments/time_slots.html',context)
 
 
-@login_required()
 def appointments(request: HttpRequest, slug, time, date):
+    
+    if not request.user.is_authenticated:
+        messages.error("You need to log in to continue the booking process. Please log in")
+        return redirect(f"{reverse('user_auth:login')}?next{request.get_full_path()}")
     
     form = FormBooking(request.POST or None)
     service = get_object_or_404(Services, slug=slug)

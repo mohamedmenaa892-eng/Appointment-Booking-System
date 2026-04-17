@@ -32,4 +32,4 @@ class CreateAccount(CreateView):
 def logout_(request:HttpRequest):
     logout(request)
     messages.success(request,'You have been logged out successfully')
-    return redirect('services_view')
+    return redirect('user_auth:logout')
