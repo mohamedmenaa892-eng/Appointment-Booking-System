@@ -1,31 +1,48 @@
-from datetime import datetime , timedelta , date
+from datetime import datetime , timedelta , date 
 from .models import Availability , Appointments , BookingWendowDays
+from django.utils import timezone
 
 
-# Funtion view booking days
+
+
 def view_days(service):
-    
     days_list = []
-    
     today = date.today()
     window = BookingWendowDays.objects.first()
     window_date = window.booking_window_days if window else 14
     max_days = today + timedelta(days=window_date)
     
-    today_varuble = today
+    availability_num = list(Availability.objects.values_list('day', flat=True))
     
-    availability_num = list(Availability.objects.values_list('day',flat=True))
+    today_current = today
+    now = timezone.now().time()
     
-    while today_varuble <= max_days:
-        day_number = today_varuble.weekday()
-        if day_number in availability_num :
-            slots = generate_time_slots(today_varuble,service)
-            slots_ = validate_slots(slots,today_varuble,service)
-            if slots_ :
-                days_list.append(today_varuble)
-        today_varuble += timedelta(days=1)
-    
+    while today_current <= max_days:
+        
+        day_number = today_current.weekday()
+        if day_number in availability_num:
+            
+            availability = Availability.objects.filter(day=day_number).first()
+            
+            if today_current == today:
+                start_time = availability.start_time
+                end_time = availability.end_time
+                is_available = start_time <= now <= end_time if start_time <= end_time else (start_time <= now or now <=end_time)
+            else:
+                is_available = True
+            
+            if is_available :
+                
+                slots = generate_time_slots(today_current,service)
+                slots_ = validate_slots(slots,today_current,service)
+                
+                if slots_:
+                    days_list.append(today_current)
+        
+        today_current += timedelta(days=1)
+        
     return days_list
+
 
 
 
