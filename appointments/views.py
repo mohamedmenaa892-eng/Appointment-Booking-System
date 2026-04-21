@@ -7,6 +7,8 @@ from .forms import FormBooking
 from django.db import IntegrityError
 from django.urls import reverse
 from django.contrib import messages
+from django.db import transaction
+from .models import Appointments
 
 
 
@@ -41,6 +43,8 @@ def time_slot_view(request:HttpRequest , slug , date ):
     return render(request,'appointments/time_slots.html',context)
 
 
+
+# Logic booking 
 def appointments(request: HttpRequest, slug, time, date):
     
     if not request.user.is_authenticated:
@@ -65,6 +69,7 @@ def appointments(request: HttpRequest, slug, time, date):
         
     if request.method == 'POST' and form.is_valid():
         
+        # Information the booking
         booking = form.save(commit=False)
         booking.user = request.user
         booking.service = service
@@ -72,19 +77,35 @@ def appointments(request: HttpRequest, slug, time, date):
         booking.start_time = start_time
         booking.end_time = end_time
         
+        
         # save booking
         try:
-            booking.save()
-            messages.success(request,
+            
+            # logic overlap
+            with transaction.atomic():
+                booking_exists = Appointments.objects.select_for_update(
+                    start_time__lt = end_time,
+                    end_time__gt = start_time
+                ).exists()
+                
+                if booking_exists:
+                    messages.error(request,'''
+                                Sorry, the time slot you're trying to book has
+                                been taken by someone else.
+                                ''')
+                    return redirect('booking_slots', slug=slug , date=date)
+                
+                booking.save()
+                messages.success(request,
                             '''
                             Your appointment has been successfully booked.
                             A confirmation or rejection message will be sent 
                             to the email you provided
                             ''')
-            return redirect('services_view')
+                return redirect('services_view')
             
         except IntegrityError:
-            return redirect('confirme_booking')
+            return redirect('booking_slots', slug=slug , date=date)
     
     context = {
         'form': form,
